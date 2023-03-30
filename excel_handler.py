@@ -1,6 +1,6 @@
-x = [-6,-4,-2,0,2,4,6,8,10,12]
-y = [2.5,1.5,4.5,2.5,-4,4.5,6,8.5,4,2.5]
-n = 'какая-то формула'
+#x = [-6,-4,-2,0,2,4,6,8,10,12]
+#y = [2.5,1.5,4.5,2.5,-4,4.5,6,8.5,4,2.5]
+#n = 'какая-то формула'
 def deix(x,y,n): #data entry in xlsx
     if (not isinstance(x, list)) and (not isinstance(y, list)):
         return(print('ошибка, y и x не являются списками'))
@@ -48,5 +48,5 @@ def deix(x,y,n): #data entry in xlsx
         ws['B2'].number_format = BUILTIN_FORMATS[2]
         wb.save(f'{xlname}.xlsx')
         return(print('файл xlsx создан'))
-deix(x, y, n)
+#deix(x, y, n)
 

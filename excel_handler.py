@@ -1,6 +1,6 @@
-#x = [-6,-4,-2,0,2,4,6,8,10,12]
-#y = [2,1,4,2,-4,4,6,8,4,2]
-#n = 'какая-то формула'
+x = [-6,-4,-2,0,2,4,6,8,10,12]
+y = [2.5,1.5,4.5,2.5,-4,4.5,6,8.5,4,2.5]
+n = 'какая-то формула'
 def deix(x,y,n): #data entry in xlsx
     if (not isinstance(x, list)) and (not isinstance(y, list)):
         return(print('ошибка, y и x не являются списками'))
@@ -27,6 +27,7 @@ def deix(x,y,n): #data entry in xlsx
         xlname = input('введите имя xlsx файла - ')
         from openpyxl import Workbook
         from openpyxl.chart import LineChart, Reference
+        from openpyxl.styles.numbers import BUILTIN_FORMATS
         wb = Workbook()
         ws = wb.active
         ws.append(['x','y'])
@@ -44,7 +45,8 @@ def deix(x,y,n): #data entry in xlsx
         chart.width = 43
         chart.height = 23
         ws.add_chart(chart, "D2")
+        ws['B2'].number_format = BUILTIN_FORMATS[2]
         wb.save(f'{xlname}.xlsx')
         return(print('файл xlsx создан'))
-#deix(x, y, n)
+deix(x, y, n)
 

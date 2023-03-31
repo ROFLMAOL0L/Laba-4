@@ -1,7 +1,7 @@
 #x = [-6,-4,-2,0,2,4,6,8,10,12]
-#y = [2.5,1.5,4.5,2.5,-4,4.5,6,8.5,4,2.5]
+#y = [2,1,4,2,-4,4,6,8,4,2]
 #n = 'какая-то формула'
-def deix(x,y,n): #data entry in xlsx
+def deix(x, y, n): #data entry in xlsx
     if (not isinstance(x, list)) and (not isinstance(y, list)):
         return(print('ошибка, y и x не являются списками'))
     elif not isinstance(x, list):
@@ -27,13 +27,12 @@ def deix(x,y,n): #data entry in xlsx
         xlname = input('введите имя xlsx файла - ')
         from openpyxl import Workbook
         from openpyxl.chart import LineChart, Reference
-        from openpyxl.styles.numbers import BUILTIN_FORMATS
         wb = Workbook()
         ws = wb.active
-        ws.append(['x','y'])
+        ws.append(['x', 'y'])
         for i in range(len(x)):
-            ws.append([x[i],y[i]])
-        values = Reference(ws, min_col = 2, min_row = 1, max_col = 2, max_row = len(y)+1)
+            ws.append([x[i], y[i]])
+        values = Reference(ws, min_col=2, min_row=1, max_col=2, max_row=len(y)+1)
         categor = Reference(ws, min_col=1, min_row=2, max_row=len(x)+1)
         chart = LineChart()
         chart.add_data(values, titles_from_data=True)
@@ -45,7 +44,6 @@ def deix(x,y,n): #data entry in xlsx
         chart.width = 43
         chart.height = 23
         ws.add_chart(chart, "D2")
-        ws['B2'].number_format = BUILTIN_FORMATS[2]
         wb.save(f'{xlname}.xlsx')
         return(print('файл xlsx создан'))
 #deix(x, y, n)

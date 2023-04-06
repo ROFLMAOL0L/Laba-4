@@ -1,15 +1,18 @@
 import math
 from excel_handler import deix
+from time import time
 split_operators = ['^', '/', '*', '+']
 allowed_string_patterns = ['log', 'sin', 'cos', 'lg', 'ln', 'x']
 
 # Правила записи функций: log(основание, значение), sin(x), cos(x), lg(x), ln(x), x
 # x ** (1 + x), x + (1 + 123), x / (1 + 1),\
 # To do 1/3 + 1/3 + 1/3 = 1.0 we can do (1/3 * 3 + 1/3 * 3 + 1/3 * 3) / 3
+# BUG x**82 + cos(x**9) + log(2, x**2 + 9) + 100
 
 
-def handle_input(func, x_range_input=(-10, 10), x_scaling_input=1):
-    func.lower()
+def handle_input(func, name2, x_range_input=(-10, 10), x_scaling_input=1):
+    handle_input_start_time = time()
+    func = func.lower()
     func = func.replace(' ', '')
     func = func.replace('**', '^')
     func = func.replace('log', 'lo')
@@ -24,11 +27,14 @@ def handle_input(func, x_range_input=(-10, 10), x_scaling_input=1):
             x_range.append(x)
             x += x_scaling_input
         for x in x_range:
+            # print('(' + str(x) + ',', end=' ')
             y = calculate(func.replace('x', str(x)))
             if y == 'Error':
                 return None
             y_range.append(float(y))
-        deix(x_range, y_range, func)
+            # print(str(y) + ')')
+        print('Обработка формулы заняла ', time() - handle_input_start_time, 'секунд.')
+        deix(x_range, y_range, func, name2)
 
 
 def look_for_brackets(brackets_string):
@@ -49,6 +55,7 @@ def look_for_brackets(brackets_string):
 
 
 def calculate_hard_functions(hard_string):
+    # (print(hard_string)
     function2 = hard_string
     new_string1 = ''
     l_s = len(hard_string)
@@ -60,30 +67,30 @@ def calculate_hard_functions(hard_string):
             if letter_of_string == 'l':
                 if function2[i+1] == 'o':
                     j = i + 2
-                    while j < l_s and j != ')':
+                    while j < l_s and function2[j] != ')':
                         j += 1
-                    insides = function2[i+3:j-1].split(',')
-                    #print('Insides of log are: ', insides)
+                    insides = function2[i+3:j].split(',')
+                    print('Insides of log are: ', insides)
                     base = float(calculate(insides[0]))
                     value = float(calculate(insides[1]))
-                    new_string1 += str(math.log(value, base))
-                    i += j - 1
+                    new_string1 += str(math.log(abs(value), abs(base)))
+                    i += j
                     last_stop = j
                 elif function2[i+1] == 'n':
                     j = i + 2
-                    while j < l_s and j != ')':
+                    while j < l_s and function2[j] != ')':
                         j += 1
                     insides = function2[i+3:j-1]
-                    #print('Insides of ln are: ', insides)
+                    # print('Insides of ln are: ', insides)
                     new_string1 += str(math.log(float(calculate(insides))))
                     i += j - 1
                     last_stop = j
                 elif function2[i+1] == 'g':
                     j = i + 2
-                    while j < l_s and j != ')':
+                    while j < l_s and function2[j] != ')':
                         j += 1
                     insides = function2[i+3:j-1]
-                    #print('Insides of lg are: ', insides)
+                    # print('Insides of lg are: ', insides)
                     new_string1 += str(math.log(float(calculate(insides)), 10))
                     i += j - 1
                     last_stop = j
@@ -92,7 +99,7 @@ def calculate_hard_functions(hard_string):
                 while j < l_s and function2[j] != ')':
                     j += 1
                 insides = function2[i + 4:j]
-                #print('Insides of sin are: ', insides)
+                print('Insides of sin are: ', insides)
                 new_string1 += str(math.sin(float(calculate(insides))))
                 i += j - 2
                 last_stop = j + 1
@@ -117,18 +124,22 @@ def split_into_mass(func_split):
     new_mas = []
     last_stop = 0
     for i, letter_of_sting in enumerate(func_split):
-        #print(letter_of_sting)
+        # print(letter_of_sting)
         if letter_of_sting in split_operators:
-            #print(func_split[last_stop:i], func_split[i])
+            # print(func_split[last_stop:i], func_split[i])
             new_mas.append(func_split[last_stop:i])
             new_mas.append(func_split[i])
             last_stop = i+1
     new_mas.append(func_split[last_stop:])
-    #print(new_mas)
+    # print(new_mas)
     return new_mas
 
 
 def calculate_numbers(num1, num2, operation_index):
+    if not num1.isnumeric():
+        num1 = calculate(num1)
+    if not num2.isnumeric():
+        num2 = calculate(num2)
     if operation_index == 0:
         return float(num1) ** float(num2)
     if operation_index == 1:
@@ -143,26 +154,26 @@ def calculate_numbers(num1, num2, operation_index):
 
 def shrink(shrink_string):
     new_string = shrink_string
-    ans_mas = []
-    #print('looool', new_string)
+    # ans_mas = []        # This line is commented cause pycharm says ans_mas is not used
+    # print('lol', new_string)
     while len(new_string) != 1:
-        #print('what?', new_string)
+        # print('what?', new_string)
         j = 0
-        #print(new_string)
+        # print(new_string)
         while j < len(split_operators):
             operator_check = split_operators[j]
             i = len(new_string) - 1
             while i >= 0:
                 if operator_check == new_string[i]:
-                    #print('first lol', new_string[0:i - 1])
-                    #print('Calc lol', calculate_numbers(new_string[i - 1], new_string[i + 1], j))
-                    #print('end lol', new_string[i + 1:])
+                    print('first lol', new_string[0:i - 1])
+                    print('Calc lol', calculate_numbers(new_string[i - 1], new_string[i + 1], j))
+                    print('end lol', new_string[i + 1:])
                     ans_mas = new_string[0:i - 1] + [str(calculate_numbers(new_string[i - 1], new_string[i + 1], j))]
                     ans_mas += new_string[i + 2:]
                     new_string = ans_mas
-                    ans_mas = []
+                    # ans_mas = []       # That one as well
                     i = len(new_string)
-                    #print('NEGRO', ans_mas)
+                    # print('NEGRO', ans_mas)
                 i -= 1
             j += 1
     return str(new_string[0])

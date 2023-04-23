@@ -1,30 +1,34 @@
 #x = [-6,-4,-2,0,2,4,6,8,10,12]
 #y = [2,1,4,2,-4,4,6,8,4,2]
 #n = 'какая-то формула'
-def deix(x, y, n): #data entry in xlsx
+#xlname = 'название файла'
+def deix(x, y, n, file_name): #data entry in xlsx
     if (not isinstance(x, list)) and (not isinstance(y, list)):
-        return(print('ошибка, y и x не являются списками'))
+        return('Error: y and x are not lists')
     elif not isinstance(x, list):
-        return(print('ошибка, x не является списком'))
+        return('Error: x is not a list')
     elif not isinstance(y, list):
-        return(print('ошибка, y не является списком'))
+        return('Error: y is not a list')
     elif (len(x) == 0) and (len(y) == 0):
-        return(print('ошибка, длины списков х и у равны 0'))
+        return('Error: the lengths of x and y lists are 0')
     elif len(x) == 0:
-        return(print('ошибка, длина списка х равна 0'))
+        return('Error: list length x is 0')
     elif len(y) == 0:
-        return(print('ошибка, длина списка у равна 0'))
+        return('Error: list length y is 0')
     elif len(x) != len(y):
-        return(print('ошибка, длины списков х и у не равны'))
+        return('Error: lists x and y are not the same length')
     elif not isinstance(n, str):
-        return(print('ошибка, n не является строкой'))
+        return('Error: n is not a string')
     elif (n == '') or (n == ' '):
-        return(print('ошибка, n является пустой строкой'))
+        return('Error: n is an empty string')
+    elif not isinstance(file_name, str):
+        return('Error: file_name is not a string')
+    elif (file_name == '') or (file_name == ' '):
+        return('Error: file_name is an empty string')
     else:
         #print(x)
         #print(y)
         #print(n)
-        xlname = input('введите имя xlsx файла - ')
         from openpyxl import Workbook
         from openpyxl.chart import LineChart, Reference
         wb = Workbook()
@@ -44,7 +48,7 @@ def deix(x, y, n): #data entry in xlsx
         chart.width = 43
         chart.height = 23
         ws.add_chart(chart, "D2")
-        wb.save(f'{xlname}.xlsx')
-        return(print('файл xlsx создан'))
+        wb.save(f'{file_name}.xlsx')
+        return('Success')
 #deix(x, y, n)
 
